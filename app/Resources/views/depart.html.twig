@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+<div class="content">
+
+    <div class="row">
+        <div class="col-lg-4">
+
+            <div class="block">
+                <div class="block-header">
+                    <h3 class="block-title">Départ</h3>
+                </div>
+
+                <div class="block-content">
+                    <div class="form-group">
+                        <label class="css-input css-radio css-radio-primary push-10-r">
+                            <input type="radio" name="course" value="matin" checked><span></span> Course du matin
+                        </label>
+                        <br/>
+                        <label class="css-input css-radio css-radio-primary push-10-r">
+                            <input type="radio" name="course" value="clm"><span></span> Contre la montre
+                        </label>
+                        <br/>
+                        <label class="css-input css-radio css-radio-primary push-10-r">
+                            <input type="radio" name="course" value="aprem"><span></span> Course de l'après-midi
+                        </label>
+                    </div>
+                </div>
+
+                <div class="block-content bg-gray-lighter">
+                    <div class="form-group">
+                        <label for="patrol">Sous unité</label>
+                        <br/>
+                        <select id="patrol" class="js-select2" style="width:100%">
+                            {% for subunit in subUnits %}
+                                <option value="{{ subunit.id }}">{{ subunit.nom }} ({{ subunit.unit.nom }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="block-content">
+
+                    <div class="form-group">
+                        <label for="patrol">Heure de départ (Heures Minutes Secondes)</label>
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button title="Maintenant" class="btn btn-default" type="button" id="backNow"><i class="fa fa-clock-o"></i></button>
+                            </span>
+                            <input class="form-control" type="text" id="depart" name="depart-time" placeholder="HH MM SS">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-primary" id="validate-depart">Valider</button>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="block">
+                <div class="block-header"><h3 class="block-title">Time checker</h3></div>
+
+                <div class="block-content">
+                    <p>Temps symfony : <span class="label label-info">{{ "now"|date('d.m.Y H.i:s') }}</span></p>
+                    <p>Temps javascript : <span class="label label-primary" id="js-timer"></span></p>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-8">
+            <div class="block block-themed">
+                <div class="block-header bg-primary-dark">
+                    <h3 class="block-title">Serveur</h3>
+                </div>
+
+                <div id="console" class="block-content bg-gray-darker" style="height:500px;overflow:auto;">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        var date    = new Date();
+        var time    = date.getDate() + '.' + (date.getUTCMonth()+1) + '.' + date.getFullYear() + " - " + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        $('#js-timer').text(time);
+    });
+
+    function nowTime() {
+
+        var input   = $('#depart');
+        var date    = new Date();
+        var value   = date.getHours() + " " + date.getMinutes() + " " + date.getSeconds();
+
+        input.val(value);
+    }
+
+    $('#backNow').click(function() {
+        nowTime();
+    });
+
+    $('#patrol').change(function() {
+        nowTime();
+    });
+
+    $('[name=course]').change(function() {
+        nowTime();
+    });
+
+    $('#validate-depart').click(function() {
+        validateForm();
+    });
+
+    function validateForm() {
+
+        var course  = $('[name=course]:checked').val();
+        var time    = $('#depart').val();
+        var patrol  = $('#patrol').val();
+
+        $.post('{{ path('app.run.ajax_depart_run') }}', {course: course, time: time, patrol: patrol})
+                .done(function(data) {
+                    message(data);
+                })
+                .fail(function(data) {
+                    $('#console').html(JSON.stringify(data));
+                });
+    }
+
+    function message(data) {
+        var message = "<div class='message font-s12'><span class='time push-15-r'>[" + data.time + "]</span><span class='message text-" + data.type + "'>" + data.message + "</span></div>";
+        $('#console').prepend(message);
+    }
+
+</script>
+{% endblock %}

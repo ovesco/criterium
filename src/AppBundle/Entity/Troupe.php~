@@ -1,0 +1,178 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Troupe
+ *
+ * @ORM\Table(name="troupe")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TroupeRepository")
+ */
+class Troupe
+{
+    const   HOMME   = 'homme';
+    const   FEMME   = 'femme';
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nom", type="string", length=255)
+     */
+    private $nom;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="sexe", type="string", length=255)
+     */
+    private $sexe;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="abbreviation", type="string", length=255)
+     */
+    private $abbreviation;
+
+    /**
+     * @var Patrouille[]
+     *
+     * @ORM\OneToMany(targetEntity="Patrouille", mappedBy="troupe")
+     */
+    private $patrouilles;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set nom
+     *
+     * @param string $nom
+     *
+     * @return Troupe
+     */
+    public function setNom($nom)
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * Get nom
+     *
+     * @return string
+     */
+    public function getNom()
+    {
+        return $this->nom;
+    }
+
+    /**
+     * Set sexe
+     *
+     * @param string $sexe
+     *
+     * @return Troupe
+     */
+    public function setSexe($sexe)
+    {
+        $this->sexe = $sexe;
+
+        return $this;
+    }
+
+    /**
+     * Get sexe
+     *
+     * @return string
+     */
+    public function getSexe()
+    {
+        return $this->sexe;
+    }
+
+    /**
+     * Set abbreviation
+     *
+     * @param string $abbreviation
+     *
+     * @return Troupe
+     */
+    public function setAbbreviation($abbreviation)
+    {
+        $this->abbreviation = $abbreviation;
+
+        return $this;
+    }
+
+    /**
+     * Get abbreviation
+     *
+     * @return string
+     */
+    public function getAbbreviation()
+    {
+        return $this->abbreviation;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->patrouilles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add patrouille
+     *
+     * @param \AppBundle\Entity\Patrouille $patrouille
+     *
+     * @return Troupe
+     */
+    public function addPatrouille(\AppBundle\Entity\Patrouille $patrouille)
+    {
+        $this->patrouilles[] = $patrouille;
+        $patrouille->setTroupe($this);
+        return $this;
+    }
+
+    /**
+     * Remove patrouille
+     *
+     * @param \AppBundle\Entity\Patrouille $patrouille
+     */
+    public function removePatrouille(\AppBundle\Entity\Patrouille $patrouille)
+    {
+        $this->patrouilles->removeElement($patrouille);
+    }
+
+    /**
+     * Get patrouilles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPatrouilles()
+    {
+        return $this->patrouilles;
+    }
+}

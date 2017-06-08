@@ -1,0 +1,103 @@
+<?php
+
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Patrouille
+ *
+ * @ORM\Table(name="patrouille")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PatrouilleRepository")
+ */
+class Patrouille
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nom", type="string", length=255)
+     */
+    private $nom;
+
+    /**
+     * @var Troupe
+     *
+     * @ORM\ManyToOne(targetEntity="Troupe", inversedBy="patrouilles")
+     */
+    private $troupe;
+
+    /**
+     * @var Participant[]
+     *
+     * @ORM\OneToMany(targetEntity="Participant", mappedBy="patrouille")
+     */
+    private $participants;
+
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set nom
+     *
+     * @param string $nom
+     *
+     * @return Patrouille
+     */
+    public function setNom($nom)
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    /**
+     * Get nom
+     *
+     * @return string
+     */
+    public function getNom()
+    {
+        return $this->nom;
+    }
+
+    /**
+     * Set troupe
+     *
+     * @param \AppBundle\Entity\Troupe $troupe
+     *
+     * @return Patrouille
+     */
+    public function setTroupe(\AppBundle\Entity\Troupe $troupe = null)
+    {
+        $this->troupe = $troupe;
+
+        return $this;
+    }
+
+    /**
+     * Get troupe
+     *
+     * @return \AppBundle\Entity\Troupe
+     */
+    public function getTroupe()
+    {
+        return $this->troupe;
+    }
+}

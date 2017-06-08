@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+<div class="content">
+
+    <div class="row">
+
+        <div class="col-lg-6">
+            <h3 class="push-15">Classement par années</h3>
+            <div class="block">
+                <ul class="nav nav-tabs" data-toggle="tabs">
+                    {% for year in years|sort %}
+                    <li {% if loop.index == 1 %}class="active"{% endif %}>
+                        <a href="#tab-{{ year }}">{{ year }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="block-content tab-content">
+                    {% for year in years|sort %}
+                    <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="tab-{{ year }}">
+                        <h4 class="font-w300 push-15">Nés en {{ year }}</h4>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Troupe</th>
+                                    <th>Sous-unité</th>
+                                    <th>Temps total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% set index = 0 %}
+                            {% for participant in participants if participant.naissance == year %}
+                                {% if index < 10 %}
+                                    {% set index = index + 1 %}
+                                    <tr>
+                                        <td>{{ participant.nom }} {{ participant.prenom }}</td>
+                                        <td>{{ participant.subUnit.unit.nom }}</td>
+                                        <td>{{ participant.subUnit.nom }}</td>
+                                        <td>{{ participant.personalResult }} </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-6">
+
+            <h3 class="push-15">Classement par subUnit</h3>
+
+            <div class="block">
+
+                <ul class="nav nav-tabs" data-toggle="tabs">
+                    {% for sexe in ['mixte', 'homme', 'femme'] %}
+                        <li {% if loop.index == 1 %}class="active"{% endif %}>
+                            <a href="#tab-subunit-{{ sexe }}">Sous-unités {% if sexe == 'mixte' %}Mixtes{% elseif sexe == 'homme' %}Gars{% else %}Filles{% endif %}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="block-content tab-content">
+
+                    {% for sexe in ['mixte', 'homme', 'femme'] %}
+                        <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="tab-subunit-{{ sexe }}">
+                            <h4 class="font-w300 push-15">Sous-unités {% if sexe == 'mixte' %}Mixtes{% elseif sexe == 'homme' %}Gars{% else %}Filles{% endif %}</h4>
+
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Classement</th>
+                                    <th>Sous-unité</th>
+                                    <th>Unité</th>
+                                    <th>Inscrits</th>
+                                    <th>Score</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for subUnit in subUnits if (sexe == 'mixte' or sexe == subUnit.unit.sexe) %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td><b>{{ subUnit.nom }}</b></td>
+                                        <td>{{ subUnit.unit.nom }}</td>
+                                        <td>{{ subUnit.able }}</td>
+                                        <td>{{ subUnit.score }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-6">
+
+            <h3 class="push-15">Classement par unité</h3>
+
+            <div class="block">
+
+                <ul class="nav nav-tabs" data-toggle="tabs">
+                    {% for sexe in ['mixte', 'homme', 'femme'] %}
+                        <li {% if loop.index == 1 %}class="active"{% endif %}>
+                            <a href="#tab-unit-{{ sexe }}">Unités {% if sexe == 'mixte' %}Mixtes{% elseif sexe == 'homme' %}Gars{% else %}Filles{% endif %}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="block-content tab-content">
+
+                    {% for sexe in ['mixte', 'homme', 'femme'] %}
+                        <div class="tab-pane {% if loop.index == 1 %}active{% endif %}" id="tab-unit-{{ sexe }}">
+                            <h4 class="font-w300 push-15">Unités {% if sexe == 'mixte' %}Mixtes{% elseif sexe == 'homme' %}Gars{% else %}Filles{% endif %}</h4>
+
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Classement</th>
+                                    <th>Unité</th>
+                                    <th>Score</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for unit in units if (sexe == 'mixte' or unit.sexe == sexe) %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td><b>{{ unit.nom }}</b></td>
+                                        <td>{{ unit.score }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+
+</script>
+{% endblock %}

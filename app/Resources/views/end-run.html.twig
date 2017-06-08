@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+    <div class="content">
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="block">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title">Choisir la course</h3>
+                    </div>
+
+                    <div class="block-content">
+
+                        <div class="form-group">
+                            <label class="css-input css-radio css-radio-primary push-10-r">
+                                <input type="radio" name="course" value="matin" checked><span></span> Course du matin
+                            </label>
+                            <br/>
+                            <label class="css-input css-radio css-radio-primary push-10-r">
+                                <input type="radio" name="course" value="clm"><span></span> Contre la montre
+                            </label>
+                            <br/>
+                            <label class="css-input css-radio css-radio-primary push-10-r">
+                                <input type="radio" name="course" value="aprem"><span></span> Course de l'après-midi
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title">Temps</h3>
+                    </div>
+
+                    <div class="block-content">
+
+                        <label class="css-input switch switch-primary push-15">
+                            <input id="manual-time" type="checkbox"><span></span> Entrer un temps manuellement
+                        </label>
+
+                        <div class="form-group" id="manual-time-view">
+                            <label for="patrol">Heure d'arrivée (Heures Minutes Secondes)</label>
+                            <div class="input-group">
+                            <span class="input-group-btn">
+                                <button title="Maintenant" class="btn btn-default" type="button" id="backNow"><i class="fa fa-clock-o"></i></button>
+                            </span>
+                                <input class="form-control" type="text" id="depart" name="depart-time" placeholder="HH MM SS">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="block">
+                    <div class="block-header bg-gray-lighter">
+                        <h3 class="block-title">Saisir</h3>
+                    </div>
+
+                    <div class="block-content" id="runner-end">
+                        <div class="form-group">
+                            <label for="dossard">Numéro de dossard</label>
+                            <input class="form-control input-lg" type="text" id="dossard" name="runner_dossard" placeholder="Saisir un numéro">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <div class="form-group">
+                                    <button class="btn btn-primary validate-form">Valider</button>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-9">
+                                <div class="push-5-t"></div>
+                                <span class="font-s12">Vous pouvez également appuyer sur enter</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="block-content" id="patrol-end">
+                        <div class="form-group">
+                            <label for="patrol">Sous-unité</label>
+                            <br/>
+                            <select id="patrol" class="js-select2" style="width:100%">
+                                {% for subUnit in subUnits %}
+                                    <option value="{{ subUnit.id }}">{{ subUnit.nom }} ({{ subUnit.unit.nom }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn btn-primary validate-form">Valider</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="block block-themed">
+                    <div class="block-header bg-primary-dark">
+                        <h3 class="block-title">Serveur</h3>
+                    </div>
+
+                    <div id="console" class="block-content bg-gray-darker" style="height:500px;overflow:auto;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+    function nowTime() {
+
+        var input   = $('#depart');
+        var date    = new Date();
+        var value   = date.getHours() + " " + date.getMinutes() + " " + date.getSeconds();
+
+        input.val(value);
+    }
+
+    $('#manual-time').change(function() {
+        updateView();
+    });
+
+    $('#backNow').click(function() {
+        nowTime();
+    });
+
+    $("[name=course]").change(function() {
+        updateView();
+    });
+
+    $(document).ready(function () {
+        updateView();
+    });
+
+    function updateView() {
+
+        var course  = $('[name=course]:checked').val();
+        var time    = $('#manual-time').is(':checked');
+
+        if(course == 'clm') {
+            $('#patrol-end').show();
+            $('#runner-end').hide();
+        }
+
+        else {
+            $('#patrol-end').hide();
+            $('#runner-end').show();
+        }
+
+        if(time)
+            $('#manual-time-view').show();
+        else
+            $('#manual-time-view').hide();
+    }
+
+    $('.validate-form').click(function() {
+       validateForm();
+    });
+
+    $('#dossard').keypress(function (e) {
+
+        var key = e.which;
+
+        if(key == 13)
+        {
+            validateForm();
+            return false;
+        }
+    });
+
+    function validateForm() {
+
+        var course  = $("[name=course]:checked").val();
+        var runner  = $("#dossard").val();
+        var patrol  = $('#patrol').val();
+
+        $('#dossard').val('');
+
+        $.post('{{ path('app.run.ajax_end_run') }}', {course: course, runner: runner, patrol: patrol})
+                .done(function(data) {
+
+                    var message = "<div class='message font-s12'><span class='time push-15-r'>[" + data.time + "]</span><span class='message text-" + data.type + "'>" + data.message + "</span></div>";
+                    $('#console').prepend(message);
+                })
+                .fail(function(data) {
+                    alert(JSON.stringify(data));
+                });
+    }
+</script>
+{% endblock %}

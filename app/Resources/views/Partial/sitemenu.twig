@@ -1,0 +1,56 @@
+<nav id="sidebar">
+
+    <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 950px;"><div id="sidebar-scroll" style="overflow: hidden; width: auto; height: 950px;">
+
+            <div class="sidebar-content">
+
+                <div class="side-header side-content bg-white-op">
+                    <a class="h5 text-white" href="">
+                        <span class="h4 font-w600 sidebar-mini-hide">CriteriumBS</span>
+                    </a>
+                </div>
+
+
+                <!-- Side Content -->
+                <div class="side-content">
+                    <ul class="nav-main">
+                        <li class="nav-main-heading">
+                            <span class="sidebar-mini-hide">Courses</span>
+                        </li>
+                        <li>
+                            <a href="{{ path('app.run.depart_run') }}">
+                                <i class="si si-user-follow"></i><span class="sidebar-mini-hide">Départ d'une course</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app.run.end_run') }}">
+                                <i class="si si-user-follow"></i><span class="sidebar-mini-hide">Terminer une course</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-heading">
+                            <span class="sidebar-mini-hide">Charger</span>
+                        </li>
+                        <li>
+                            <a href="{{ path('app.load.excel') }}">
+                                <i class="si si-user-follow"></i><span class="sidebar-mini-hide">Charger des données</span>
+                            </a>
+                        </li>
+                        <li class="nav-main-heading">
+                            <span class="sidebar-mini-hide">Autre</span>
+                        </li>
+                        <li>
+                            <a href="{{ path('app.results.eclaireurs') }}">
+                                <i class="si si-user-follow"></i><span class="sidebar-mini-hide">Résultats éclaireurs</span>
+                            </a>
+                            <a href="{{ path('app.results.louveteaux') }}">
+                                <i class="si si-user-follow"></i><span class="sidebar-mini-hide">Résultats louveteaux</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- END Side Content -->
+            </div>
+            <!-- Sidebar Content -->
+        </div><div class="slimScrollBar" style="background: rgb(255, 255, 255); width: 5px; position: absolute; top: 0px; opacity: 0.35; display: none; border-radius: 7px; z-index: 99; right: 2px; height: 950px;"></div><div class="slimScrollRail" style="width: 5px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51); opacity: 1; z-index: 90; right: 2px;"></div></div>
+    <!-- END Sidebar Scroll Container -->
+</nav>

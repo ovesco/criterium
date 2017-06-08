@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block main %}
+
+    <div class="content">
+
+        <div class="row">
+            <div class="col-lg-4">
+
+                <div class="block">
+                    <div class="block-header">
+                        <h3 class="block-title">Balancer dans la base de données</h3>
+                    </div>
+
+                    <div class="block-content">
+
+                        <div class="form-group">
+                            <label for="excel-content">Fichier excel</label>
+                            <p class="font-s12 text-info">Copier coller les cellules du fichier excel, sans prendre de colonnes ou de lignes en plus ni les entêtes des colonnes</p>
+                            <p class="font-s12 text-danger">Nom - Prénom - Année de naissance - sous-unité ID - Numéro dossard</p>
+                            <textarea id="excel-content" class="form-control" name="excel-content"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <button class="btn btn-primary" id="import">Importer</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="block">
+                    <div class="block-header">
+                        <h3 class="block-title">Liste des sous-unités</h3>
+                    </div>
+
+                    <div class="block-content" style="height:300px;overflow:auto;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Troupe</th>
+                                    <th>Patrouille</th>
+                                    <th>ID subUnit</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for subUnit in subUnits %}
+                                    <tr>
+                                        <td>{{ subUnit.unit.nom }}</td>
+                                        <td>{{ subUnit.nom }}</td>
+                                        <td>{{ subUnit.id }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-lg-8">
+                <div class="block block-themed">
+                    <div class="block-header bg-primary-dark">
+                        <h3 class="block-title">Serveur</h3>
+                    </div>
+
+                    <div id="console" class="block-content bg-gray-darker" style="height:500px;overflow:auto;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+
+        $('#import').click(function() {
+
+
+            var data    = $('#excel-content').val();
+            var rows    = data.split("\n");
+            var set     = [];
+
+            for(var y in rows) {
+
+                var cells   = rows[y].split("\t");
+
+                set.push({
+                    nom:        cells[0],
+                    prenom:     cells[1],
+                    annee:      cells[2],
+                    subUnit: cells[3],
+                    dossard:    cells[4]
+                });
+            }
+
+            $.post('{{ path('app.load.ajax_excel') }}', {data: set})
+                    .done(function(data) {
+                        message(data);
+                    })
+                    .fail(function(data) {
+                        $('#console').html(data.responseText);
+                    });
+        });
+
+        function message(data) {
+            var message = "<div class='message font-s12'><span class='time push-15-r'>[" + data.time + "]</span><span class='message text-" + data.type + "'>" + data.message + "</span></div>";
+            $('#console').prepend(message);
+        }
+
+    </script>
+{% endblock %}
